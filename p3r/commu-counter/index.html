@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>P3R コミュランクカウンター｜学校コミュ残りチャンス</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#061329;--card:#0e2546;--line:#2f537e;--a:#89d9ff;--text:#edf6ff;--mute:#b8cce4;
+  --danger:#ff7280;--warn:#ffca6b
+}
+*{box-sizing:border-box}
+body{min-height:100vh;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:
+   radial-gradient(ellipse 61% 31% at 87% 3%,rgba(26,118,176,.62) 0%,transparent 76%),
+   radial-gradient(ellipse 36% 24% at 6% 20%,rgba(32,72,156,.48) 0%,transparent 78%),
+   radial-gradient(ellipse 47% 31% at 78% 39%,rgba(21,84,151,.44) 0%,transparent 79%),
+   radial-gradient(ellipse 49% 30% at 9% 62%,rgba(67,53,143,.40) 0%,transparent 76%),
+   radial-gradient(ellipse 36% 22% at 98% 78%,rgba(15,115,152,.42) 0%,transparent 76%),
+   radial-gradient(ellipse 55% 28% at 35% 98%,rgba(35,65,143,.40) 0%,transparent 83%),
+   linear-gradient(155deg,#07152d 0%,#071b39 26%,#061329 53%,#091a35 79%,#061329 100%);
+  color:var(--text);font-size:14px}
+a{color:var(--a)}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.wrap{max-width:1500px;margin:auto;padding:24px clamp(12px,2.8vw,38px) 70px}
+.nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;font-size:12px}
+.nav a{text-decoration:none;color:#a9ccec}.nav .slash{opacity:.38}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;color:#a5dbff;margin:0 0 8px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:clamp(29px,4vw,52px);letter-spacing:-.05em;margin:0;line-height:1.18}
+.hero-badge{font-size:11px;letter-spacing:.12em;border:1px solid #5e92bf;color:#bfeaff;padding:10px 14px;border-radius:999px;background:#113457}
+.summary{background:#0a2047;border:1px solid var(--line);border-radius:14px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;margin:0 0 14px}.summary b{font-size:23px;color:var(--a)}.summary span{font-size:12px;color:var(--mute)}
+.watch{background:linear-gradient(150deg,#0f3265,#10284c);border:1px solid #3670a7;border-radius:16px;padding:15px;margin-bottom:14px}
+.watch h2{font-size:15px;margin:0 0 12px;letter-spacing:.04em}.date-line{display:flex;align-items:center;gap:11px;flex-wrap:wrap}.date-line label{font-size:13px;color:var(--mute);font-weight:600}.date-wrap{display:flex;align-items:center;gap:5px}.date-wrap input{width:88px;background:#061c3c;border:1px solid #4e7fb0;border-radius:8px;color:white;font-weight:700;letter-spacing:.09em;font-size:19px;padding:8px;text-align:center;font-variant-numeric:tabular-nums;outline:none}.date-wrap input:focus{border-color:var(--a);box-shadow:0 0 0 3px #5bcaff22}.date-error{font-size:12px;color:var(--danger);min-height:17px;margin-top:4px}.watch-values{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.metric{background:#071d40;border:1px solid #244a78;padding:11px 12px;border-radius:10px;min-width:0}.metric small{font-size:11px;color:var(--mute)}.metric strong{display:block;font-size:27px;line-height:1.3;font-variant-numeric:tabular-nums}.compare{margin-top:9px;border:1px solid #35669d;background:#0b294f;border-radius:12px;padding:12px;transition:background .15s,border-color .15s}.compare-title{font-size:12px;color:var(--mute)}.ratio{font-size:30px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums;letter-spacing:.02em}.ratio span{font-size:14px;font-weight:500;color:var(--mute)}.status{font-size:13px;color:#a9eddf;font-weight:700;margin-top:3px}.compare.danger{border-color:#f16b76;background:#49223b}.compare.danger .ratio,.compare.danger .status{color:#ff9da8}.compare.tight{border-color:#caa256;background:#423a29}.compare.tight .status{color:var(--warn)}.details{font-size:11px;color:var(--mute);line-height:1.65;margin:10px 1px 0}.small-note{font-size:11px;color:#f3d59e;margin-top:7px;line-height:1.5}
+.arcana-list{display:grid;gap:7px}.arcana{background:rgba(16,41,82,.94);border:1px solid var(--line);border-radius:11px;display:flex;align-items:center;padding:7px 10px;min-height:53px;gap:8px}.arcana.max{border-color:#63c6cf;background:#113c61}.num{color:#a6bad8;width:26px;text-align:right;font-variant-numeric:tabular-nums;font-size:13px}.name{flex:1;min-width:0;font-weight:600;font-size:15px}.school-tag{font-size:10px;color:#b9e5ff;background:#1b4776;border-radius:5px;padding:2px 5px;margin-left:5px;white-space:nowrap;vertical-align:middle}.control{display:flex;gap:6px;align-items:center}button{font:inherit;cursor:pointer;touch-action:manipulation}.control button{width:37px;height:37px;border:1px solid #3e679c;border-radius:9px;background:#1c4378;color:#f8fcff;font-size:23px;font-weight:400;line-height:1}.control button.plus{background:#18629e;border-color:#2887cc}.control button:active{transform:scale(.95)}.control button:disabled{opacity:.3;cursor:default}.rank{width:31px;text-align:center;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}.max .rank{color:#7ee3d5}
+.actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.actions button{border:1px solid var(--line);border-radius:9px;padding:11px 14px;background:#183d70;color:#fff;font-weight:600;flex:1;white-space:nowrap}.actions button.primary{background:#126ba6}#message{min-height:20px;font-size:12px;color:#9ce7dd;margin:12px 5px}footer{font-size:12px;color:var(--mute);line-height:1.7;margin-top:18px;padding:0 5px}.note{border-left:2px solid var(--a);padding-left:10px}.bar{height:5px;background:#1b3459;border-radius:5px;overflow:hidden;margin-top:9px}.bar div{height:100%;background:linear-gradient(90deg,#348de6,#61d2e6);transition:width .2s}
+@media(max-width:380px){.arcana{padding:6px 8px;gap:5px}.num{width:20px}.name{font-size:14px}.control{gap:4px}.control button{width:34px;height:36px}.school-tag{font-size:9px;padding:2px 3px;margin-left:3px}.rank{width:25px}}
+
+/* 配合表と共通のページ構造・パネル表現 */
+.overview{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(290px,.8fr);gap:17px;margin-bottom:17px;align-items:stretch}
+.watch,.summary,.arcana-panel{
+  border:1px solid var(--line);
+  background:linear-gradient(145deg,rgba(17,46,83,.94),rgba(10,31,62,.96));
+  border-radius:18px;box-shadow:0 18px 70px rgba(0,0,0,.12);
+  padding:clamp(14px,2vw,24px);margin:0;min-width:0
+}
+.watch h2,.arcana-panel h2{font-size:14px;font-weight:800;letter-spacing:.04em;margin:0 0 14px}
+.watch-values{margin-top:12px}
+.summary{display:flex;flex-direction:column;justify-content:center;gap:20px}
+.summary .summary-row{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.summary .summary-row>div{min-width:0}
+.summary b{font-size:clamp(22px,2.4vw,30px)}
+.arcana-panel{margin-bottom:17px}
+.arcana-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.arcana{border-color:#37638e;background:rgba(10,33,65,.94);border-radius:10px;min-width:0;min-height:58px}
+.arcana.max{border-color:#63c6cf;background:#113c61}
+.control button:hover:not(:disabled){filter:brightness(1.12)}
+.actions{margin-top:0}
+footer{font-size:11px;color:#8daecf;line-height:1.8;margin-top:24px}
+@media(max-width:1150px){.arcana-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.overview{grid-template-columns:1fr}.summary{gap:8px}}
+@media(max-width:640px){
+  .wrap{padding:18px 10px 55px}
+  .hero-badge{display:none}
+  .watch,.summary,.arcana-panel{padding:13px;border-radius:14px}
+  .arcana-list{grid-template-columns:1fr;gap:7px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="nav" aria-label="パンくずリスト"><a href="../../">MioGameTools</a><span class="slash">/</span><a href="../">Persona 3 Reload</a><span class="slash">/</span><span>コミュランクカウンター</span></nav>
+  <header class="hero">
+    <div><p class="eyebrow">PERSONA 3 RELOAD · SOCIAL LINKS</p><h1>コミュランクカウンター</h1></div>
+    <span class="hero-badge">XXII ARCANA / RANK TRACKER</span>
+  </header>
+  <div class="overview">
+    <section class="watch" aria-labelledby="watchTitle">
+  <h2 id="watchTitle">01 · 学校コミュ 全MAXまでのカウントダウン</h2>
+  <div class="date-line"><label for="gameDate">ゲーム内日付</label><div class="date-wrap"><input id="gameDate" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" value="0421" autocomplete="off" aria-describedby="dateHelp" placeholder="MMDD"><span style="font-size:13px;color:var(--mute)">MMDD</span></div></div>
+  <div class="date-error" id="dateError" role="status" aria-live="polite"></div>
+  <div class="watch-values"><div class="metric"><small>学校コミュの残りランク</small><strong id="schoolNeed">—</strong></div><div class="metric"><small>学校コミュの残りチャンス</small><strong id="schoolChance">—</strong></div></div>
+  <div class="compare" id="compare"><div class="compare-title">残りコミュ / 残りチャンス</div><div class="ratio" id="schoolRatio">— / —</div><div class="status" id="schoolStatus">計算中</div></div>
+  <p class="details" id="dateHelp">入力日の放課後を含め、1/30までの「学校コミュを1回以上進められる日」を数えます。試験・長期休暇・強制イベントを反映。1日で進められるのは基本1コミュです。</p>
+  <p class="small-note">※ 12/7〜12/12の6日間は女帝コミュのみ。必要ステータス・解禁条件、各コミュの活動曜日、好感度不足による空振りは別途考慮が必要です。赤は日数不足の確定、赤以外でも全MAX達成の保証ではありません。</p>
+    </section>
+    <section class="summary" aria-label="全アルカナの進捗">
+      <div class="summary-row">
+        <div><span>全アルカナの合計ランク</span><br><b id="total">0 / 220</b><div class="bar"><div id="progress" style="width:0"></div></div></div>
+        <div style="text-align:right"><span>MAX達成</span><br><b id="maxed">0 / 22</b></div>
+      </div>
+    </section>
+  </div>
+  <section class="arcana-panel" aria-labelledby="ranksTitle">
+    <h2 id="ranksTitle">02 · ARCANA RANKS</h2>
+    <div class="arcana-list" id="list"></div>
+  </section>
+<div class="actions"><button class="primary" id="export">現在値をコピー</button><button id="import">記録から復元</button><button id="reset">初期値に戻す</button></div>
+<div id="message" role="status" aria-live="polite"></div>
+<footer><p class="note">ランクと日付はこのブラウザ内で自動保存されます。別の端末やブラウザには同期されないため、ときどき「現在値をコピー」でバックアップすると安心です。ネタバレ防止のため、キャラクター名は表示していません。</p><p class="note">学校コミュの活動日データ：<a style="color:#8dd6ff" href="https://aqiu384.github.io/megaten-database/p3r/social-events" target="_blank" rel="noopener noreferrer">megaten-database / P3R Social Events</a>。校内11アルカナを対象に、ランク10までの残数を合算。日別の「O」（通常のコミュ活動）のみをチャンスとして数え、休日の特別な誘い「D」は含めていません。</p></footer></main>
+<script>
+'use strict';
+const names=['愚者','魔術師','女教皇','女帝','皇帝','法王','恋愛','戦車','正義','隠者','運命','剛毅','刑死者','死神','節制','悪魔','塔','星','月','太陽','審判','永劫'];
+const defaults=Array(22).fill(0);
+const SCHOOL=[1,2,3,4,6,7,8,10,11,14,21];
+const RANK_KEY='p3r_arcana_ranks_v1'; // 旧版と同じキー。保存済みの進捗を引き継ぐ
+const DATE_KEY='p3r_arcana_game_date_v2';
+// P3Rの校内コミュ活動日（通常活動「O」のある日）。月ごとの日付データ。
+// 日曜日の通常外出イベント「D」はランクを上げる学校コミュ枠とは扱わない。
+const SCHOOL_DAYS={
+  '04':[22,23,24,27,28,30],
+  '05':[2,6,7,8,23,25,26,27,28,29,30],
+  '06':[1,2,3,4,5,6,9,10,11,12,13,15,16,17,18,19,22,23,24,25,26,27,29,30],
+  '07':[1,2,3,4,6,24,25],
+  '08':[],
+  '09':[1,3,4,7,8,9,10,11,12,14,15,16,17,24,25,26,28,29,30],
+  '10':[1,2,3,17,19,20,21,22,23,24,26,27,28,29,30,31],
+  '11':[2,6,7,10,11,12,13,14,16,21,28,30],
+  '12':[1,2,4,5,7,8,9,10,11,12,19,21,22,24,25,26],
+  '01':[8,9,12,13,14,15,16,18,19,20,21,22,23,25,26,27,28,29,30]
+};
+function calendarOrdinal(m,d){return (m<=3?10000:0)+m*100+d}
+const ALL_SCHOOL_DAYS=Object.entries(SCHOOL_DAYS).flatMap(([m,days])=>days.map(d=>calendarOrdinal(Number(m),d))).sort((a,b)=>a-b);
+function normalizeDate(raw){
+ const s=String(raw).trim();if(!/^\d{4}$/.test(s))return null;
+ const m=Number(s.slice(0,2)),d=Number(s.slice(2));
+ if(!(m>=4&&m<=12||m===1))return null;
+ const daysInMonth=new Date(m===1?2010:2009,m,0).getDate();
+ if(d<1||d>daysInMonth)return null;
+ const ord=calendarOrdinal(m,d);
+ if(ord<calendarOrdinal(4,21)||ord>calendarOrdinal(1,31))return null;
+ return {text:s,ord};
+}
+function availableDays(raw){const d=normalizeDate(raw);return d?ALL_SCHOOL_DAYS.filter(x=>x>=d.ord).length:null}
+function validRanks(v){return Array.isArray(v)&&v.length===22&&v.every(n=>Number.isInteger(n)&&n>=0&&n<=10)}
+let ranks;try{const v=JSON.parse(localStorage.getItem(RANK_KEY));ranks=validRanks(v)?v:defaults.slice()}catch(e){ranks=defaults.slice()}
+let gameDate='0421';try{const saved=localStorage.getItem(DATE_KEY);if(normalizeDate(saved))gameDate=saved}catch(e){}
+const list=document.getElementById('list');const rankEls=[],rows=[],btns=[];
+for(let i=0;i<names.length;i++){
+ const row=document.createElement('div');row.className='arcana';
+ const num=document.createElement('span');num.className='num';num.textContent=i;
+ const name=document.createElement('span');name.className='name';name.textContent=names[i];
+ if(SCHOOL.includes(i)){const tag=document.createElement('span');tag.className='school-tag';tag.textContent='学校';name.append(tag)}
+ const ct=document.createElement('div');ct.className='control';
+ const minus=document.createElement('button');minus.textContent='−';minus.type='button';minus.setAttribute('aria-label',names[i]+' を1減らす');
+ const value=document.createElement('span');value.className='rank';value.setAttribute('aria-live','polite');
+ const plus=document.createElement('button');plus.textContent='+';plus.className='plus';plus.type='button';plus.setAttribute('aria-label',names[i]+' を1増やす');
+ minus.onclick=()=>adjust(i,-1);plus.onclick=()=>adjust(i,1);
+ ct.append(minus,value,plus);row.append(num,name,ct);list.append(row);
+ rankEls.push(value);rows.push(row);btns.push([minus,plus]);
+}
+function adjust(i,d){const next=Math.max(0,Math.min(10,ranks[i]+d));if(next!==ranks[i]){ranks[i]=next;saveRanks();render()}}
+function saveRanks(){try{localStorage.setItem(RANK_KEY,JSON.stringify(ranks))}catch(e){}}
+function saveDate(){try{localStorage.setItem(DATE_KEY,gameDate)}catch(e){}}
+const dateEl=document.getElementById('gameDate');dateEl.value=gameDate;
+function updateDate(){
+ const input=dateEl.value.trim();const valid=normalizeDate(input);
+ if(!valid){document.getElementById('dateError').textContent='日付は 0916 のように4桁（4/21〜1/31）で入力してください。';renderSchool();return}
+ document.getElementById('dateError').textContent='';gameDate=valid.text;saveDate();renderSchool();
+}
+dateEl.addEventListener('input',updateDate);
+function renderSchool(){
+ const need=SCHOOL.reduce((sum,i)=>sum+10-ranks[i],0);
+ const chance=availableDays(dateEl.value.trim());
+ document.getElementById('schoolNeed').textContent=need;
+ document.getElementById('schoolChance').textContent=chance===null?'—':chance;
+ const ratio=document.getElementById('schoolRatio'),status=document.getElementById('schoolStatus'),panel=document.getElementById('compare');
+ panel.classList.remove('danger','tight');
+ if(chance===null){ratio.textContent=need+' / —';status.textContent='有効な日付を入力すると判定します';return}
+ ratio.textContent=need+' / '+chance;
+ if(need>chance){panel.classList.add('danger');status.textContent='不足 '+(need-chance)+' 回：全MAXに必要な日数が足りません';}
+ else if(need===chance){panel.classList.add('tight');status.textContent='余裕0日：毎回ランクアップが必要';}
+ else if(need===0){status.textContent='学校コミュはすべてMAX！';}
+ else{status.textContent='余裕 '+(chance-need)+' 日（曜日・解禁条件は別途確認）';}
+}
+function render(){
+ const total=ranks.reduce((a,b)=>a+b,0);
+ document.getElementById('total').textContent=total+' / 220';
+ document.getElementById('maxed').textContent=ranks.filter(x=>x===10).length+' / 22';
+ document.getElementById('progress').style.width=(total/220*100)+'%';
+ for(let i=0;i<22;i++){rankEls[i].textContent=ranks[i];rows[i].classList.toggle('max',ranks[i]===10);btns[i][0].disabled=ranks[i]===0;btns[i][1].disabled=ranks[i]===10}
+ renderSchool();
+}
+function message(t){document.getElementById('message').textContent=t}
+document.getElementById('export').onclick=async()=>{
+ const s='P3Rコミュ記録（0〜21）\n日付:'+gameDate+'\n'+ranks.join(',');
+ try{await navigator.clipboard.writeText(s);message('日付とランクをコピーしました。')}
+ catch(e){window.prompt('以下をコピーして保存してください',s);message('記録を書き出しました。')}
+};
+document.getElementById('import').onclick=()=>{
+ const input=window.prompt('「現在値をコピー」で保存した記録を貼り付けてください');if(input===null)return;
+ const lines=input.trim().split(/\r?\n/);const v=lines[lines.length-1].trim().split(/[,\s]+/).filter(Boolean).map(Number);
+ if(!validRanks(v)){message('復元できませんでした。0〜10のランク22個が必要です。');return}
+ const matched=input.match(/日付:(\d{4})/);const incomingDate=matched&&normalizeDate(matched[1])?matched[1]:null;
+ if(confirm('現在の値を貼り付けた記録で上書きしますか？')){ranks=v;saveRanks();if(incomingDate){gameDate=incomingDate;dateEl.value=incomingDate;saveDate()}render();message('記録を復元しました。')}
+};
+document.getElementById('reset').onclick=()=>{
+ if(confirm('ランクと日付を初期値（4/21）に戻しますか？')){ranks=defaults.slice();gameDate='0421';dateEl.value=gameDate;saveRanks();saveDate();document.getElementById('dateError').textContent='';render();message('初期値に戻しました。')}
+};
+render();
+// 手元での検証用: ?test=1 で内部の集計テストを実行（通常利用では無視）。
+if(new URLSearchParams(location.search).has('test')){
+ const tests=[['0916',71],['1017',60],['0108',19],['0130',1],['0131',0],['0901',82]];
+ tests.forEach(([d,want])=>{if(availableDays(d)!==want)console.error('Calendar mismatch:',d,availableDays(d),want)});
+ if(SCHOOL.reduce((n,i)=>n+10-defaults[i],0)!==110)console.error('Rank mismatch');
+}
+</script></body></html>
