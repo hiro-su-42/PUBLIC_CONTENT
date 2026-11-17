@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1833">
+<meta name="description" content="ペルソナ3 リロードのアルカナ合体表。22アルカナをタップして、同じ結果になる組み合わせをハイライト。">
+<title>P3R アルカナ合体表 | MioGameTools</title>
+<style>
+:root{
+ color-scheme:dark;--ink:#edf6ff;--soft:#b8cce4;--accent:#89d9ff;--back:#061329;
+ --panel:#0e2546;--border:#2f537e;--hero:#143665
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{min-height:100vh;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+ /* 不規則に散らした多層グラデーション。斜線は使わず、濃紺をベースに色の深さをつくる。 */
+ background:
+  radial-gradient(ellipse 61% 31% at 87% 3%,rgba(26,118,176,.62) 0%,transparent 76%),
+  radial-gradient(ellipse 36% 24% at 6% 20%,rgba(32,72,156,.48) 0%,transparent 78%),
+  radial-gradient(ellipse 47% 31% at 78% 39%,rgba(21,84,151,.44) 0%,transparent 79%),
+  radial-gradient(ellipse 49% 30% at 9% 62%,rgba(67,53,143,.40) 0%,transparent 76%),
+  radial-gradient(ellipse 36% 22% at 98% 78%,rgba(15,115,152,.42) 0%,transparent 76%),
+  radial-gradient(ellipse 55% 28% at 35% 98%,rgba(35,65,143,.40) 0%,transparent 83%),
+  linear-gradient(155deg,#07152d 0%,#071b39 26%,#061329 53%,#091a35 79%,#061329 100%);
+ color:var(--ink);font-size:14px}
+a{color:var(--accent)}button,select{font:inherit}button{cursor:pointer}
+button:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:2px}
+main{max-width:1500px;margin:auto;padding:24px clamp(12px,2.8vw,38px) 70px}
+.nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;font-size:12px}
+.nav a{text-decoration:none;color:#a9ccec}.nav .slash{opacity:.38}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;color:#a5dbff;margin:0 0 8px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:clamp(29px,4vw,52px);letter-spacing:-.05em;margin:0;line-height:1.18}
+.hero-badge{font-size:11px;letter-spacing:.12em;border:1px solid #5e92bf;color:#bfeaff;padding:10px 14px;border-radius:999px;background:#113457}
+.panel{border:1px solid var(--border);background:linear-gradient(145deg,rgba(17,46,83,.94),rgba(10,31,62,.96));border-radius:18px;box-shadow:0 18px 70px rgba(0,0,0,.12);padding:clamp(14px,2vw,24px);margin:0 0 17px}
+.section-title{font-size:14px;font-weight:800;letter-spacing:.04em;margin:0 0 10px}
+.controls{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.reset{border-radius:999px;border:1px solid #6b9abf;background:#163b63;color:#edf8ff;padding:8px 14px;font-size:12px;font-weight:700}
+.reset:hover{background:#1e527f}
+.chips{display:grid;grid-template-columns:repeat(22,minmax(44px,1fr));gap:4px;margin-top:15px;padding:4px 4px 7px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-color:#5087b8 #0b2040}
+.chip{min-width:0;white-space:nowrap;background:hsl(211 58% var(--l));color:#fff;border:2px solid transparent;padding:8px 0;border-radius:7px;font-size:clamp(11px,.85vw,12px);font-weight:800;min-height:40px;transition:background .16s,color .16s,transform .12s,border-color .16s}
+.chip:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.6)}
+.chip[aria-pressed="true"]{background:#fff;color:#0a1220;border-color:#d1edff;box-shadow:0 0 0 3px rgba(230,244,255,.19)}
+.selection{display:flex;gap:15px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin-top:15px;padding:13px 15px;border:1px solid #3e6893;background:#091d38;border-radius:12px}
+.selection-name{font-weight:900;font-size:18px}
+.selection-name[hidden]{display:none}
+.selection-label{color:var(--soft);font-size:12px}
+.selection strong{font-variant-numeric:tabular-nums;font-size:18px}
+
+.reverse-control{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;max-width:410px;margin-top:14px}
+.reverse-control label{font-size:12px;color:var(--soft);font-weight:700}
+.reverse-control select{width:100%;min-height:46px;border:1px solid #678fb4;border-radius:11px;background:#0a1c38;color:#f4faff;padding:10px 12px;font-weight:700}
+.reverse-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:20px 0 9px}
+.reverse-heading span{font-size:12px;color:var(--soft)}
+.reverse-heading strong{font-size:12px;font-variant-numeric:tabular-nums;color:#b2e5ff}
+.recipes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:8px;max-height:390px;overflow:auto;padding:2px 2px 5px;scrollbar-color:#5087b8 #0b2040}
+.recipe-row{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:8px;align-items:center;border:1px solid #37638e;background:#0a2141;color:#f3f9ff;padding:8px;border-radius:10px;text-align:center;min-height:70px}
+.recipe-row:hover,.recipe-row:focus-visible{border-color:#acdfff;background:#133962}
+.recipe-name{min-width:0;display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:800}
+.recipe-name small{font-size:10px;font-weight:500;color:#9ec4e5}
+.recipe-x{color:#8bcbe9;font-size:18px;font-weight:800}
+.reverse-empty{border:1px dashed #3a6897;border-radius:12px;color:var(--soft);padding:17px;font-size:13px;line-height:1.7}
+.recipe-row.active{border-color:#fff;background:#204b76}
+
+.table-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.table-heading .section-title{margin:0}
+.table-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.fit-action{white-space:nowrap}
+.table-wrap{--matrix-canvas:#07172f;overflow:auto;max-height:min(70vh,960px);overscroll-behavior:contain;border:1px solid #305a85;border-radius:12px;background:var(--matrix-canvas);scrollbar-color:#4b83b5 #0b2040}
+table{border-collapse:separate;border-spacing:3px;min-width:max-content;margin:0;padding:4px}
+th,td{padding:0}
+thead th{position:sticky;top:0;z-index:3;background:var(--matrix-canvas);border-radius:7px;box-shadow:none}
+tbody th{position:sticky;left:0;z-index:2;background:var(--matrix-canvas);border-radius:7px;box-shadow:none}
+thead th:first-child{left:0;z-index:4;background:var(--matrix-canvas);box-shadow:none}
+.axis{display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:56px;min-width:69px;border:2px solid transparent;border-radius:7px;background:transparent;color:hsl(211 58% var(--text-l));padding:7px 6px;font-weight:800;width:100%;transition:background .16s,color .16s,border-color .16s}
+.axis:hover{border-color:rgba(220,240,255,.5);background:rgba(255,255,255,.10);filter:none}
+.axis[aria-pressed="true"],.axis[aria-pressed="true"]:hover{background:#fff;border-color:#d1edff;color:#0a1220;filter:none}
+.axis small{color:inherit;opacity:.85;font-size:9px;font-weight:500}
+.corner{width:78px;min-width:78px;min-height:56px;display:grid;place-items:center;color:#95c9ed;font-size:11px;line-height:1.5;text-align:center}
+.cell-button{min-width:69px;width:100%;height:51px;border-radius:7px;border:2px solid transparent;font-size:12px;font-weight:800;white-space:nowrap;padding:6px 2px;transition:background .17s,opacity .17s,filter .17s,box-shadow .17s}
+.cell-button.result{background:hsl(211 58% var(--l));color:#fff}
+.cell-button.result:hover{border-color:#d2eaff;filter:brightness(1.12)}
+.cell-button.result.is-selected{background:#fff;border-color:#7db9dd;color:#0a1220;box-shadow:0 0 0 1px rgba(22,67,111,.18);position:relative;z-index:1}
+.cell-button.result.is-dimmed{opacity:.56;filter:none}
+.cell-button.same{background:transparent;color:hsl(211 58% var(--text-l));border-color:transparent}
+.cell-button.same:hover{background:rgba(255,255,255,.10);border-color:rgba(220,240,255,.5);filter:none}
+.cell-button.none{background:#152944;color:#fff}
+.cell-button.is-pair{outline:2px solid #ffffff;outline-offset:-2px}
+.notes{font-size:12px;line-height:1.9;color:var(--soft)}
+.notes summary{cursor:pointer;color:var(--ink);margin:0;font-weight:800;list-style-position:inside}
+.notes[open] summary{margin-bottom:12px}
+.notes p{margin:6px 0}
+.source{font-size:11px;margin-top:18px;color:#8daecf}
+.footer{font-size:11px;margin-top:26px;color:#7eaccf}
+/* PC: 23列を幅いっぱいに収める。スマホは従来どおりスクロール可能。 */
+@media(min-width:780px){
+ .table-wrap{overflow:visible;max-height:none}
+ #fusionTable{width:100%;min-width:0;table-layout:fixed;border-spacing:2px;padding:2px}
+ .axis{min-width:0;min-height:32px;height:32px;gap:0;padding:0 1px;border-width:1px;border-radius:4px;font-size:clamp(8px,.76vw,11px);letter-spacing:-.04em}
+ .axis small{display:none}
+ .cell-button{min-width:0;height:32px;padding:0 1px;border-width:1px;border-radius:4px;font-size:clamp(8px,.76vw,11px);letter-spacing:-.04em}
+}
+@media(max-width:779px){.fit-action{display:none}}
+/* 「全体表示」は03だけを前面に出し、JSで縦横の収まりを計測する。 */
+body.matrix-lock{overflow:hidden}
+#matrixPanel.matrix-expanded{
+ position:fixed;inset:0;z-index:50;margin:0;border-radius:0;padding:12px;
+ display:flex;flex-direction:column;overflow:hidden;
+ background:linear-gradient(145deg,#112e53,#07182f)
+}
+#matrixPanel.matrix-expanded .table-heading{flex:0 0 auto;margin-bottom:8px}
+#matrixPanel.matrix-expanded .table-wrap{
+ flex:1 1 auto;min-height:0;max-height:none;width:100%;overflow:hidden;
+ position:relative;border-radius:8px
+}
+#matrixPanel.matrix-expanded #fusionTable{
+ transform:scale(var(--matrix-scale,1));transform-origin:top left
+}
+#matrixPanel.matrix-expanded .legend{flex:0 0 auto;margin-top:8px;line-height:1.4;font-size:11px}
+@media(max-width:600px){
+ main{padding:18px 10px 55px}
+ .hero-badge{display:none}
+ .panel{border-radius:14px;padding:13px}
+ .recipe-row{gap:5px}.recipe-name{font-size:12px}.recipes{grid-template-columns:1fr}
+ .axis,.cell-button{min-width:63px}
+ .cell-button{height:48px}
+ .corner{min-width:70px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <nav class="nav" aria-label="パンくずリスト"><a href="../../">MioGameTools</a><span class="slash">/</span><a href="../">Persona 3 Reload</a><span class="slash">/</span><span>アルカナ合体表</span></nav>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">PERSONA 3 RELOAD · FUSION ATLAS</p>
+      <h1>アルカナ合体表</h1>
+    </div>
+    <span class="hero-badge">XXII ARCANA / NORMAL FUSION</span>
+  </header>
+
+  <section class="panel" aria-labelledby="filterTitle">
+    <div class="controls"><h2 class="section-title" id="filterTitle">01 · 合体結果をハイライト</h2><button id="clear" class="reset" type="button">選択を解除</button></div>
+    <div id="chips" class="chips" role="group" aria-label="合体結果のアルカナを選ぶ（横スクロール可能）" tabindex="0"></div>
+    <div class="selection" id="selection" aria-live="polite">
+      <div><span class="selection-label">選択中のアルカナ</span><div id="selectionName" class="selection-name">すべて表示</div></div>
+      <div><span class="selection-label">異なるアルカナの組み合わせ</span><div><strong id="matches">—</strong> <span class="selection-label">通り</span></div></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="pairTitle">
+    <h2 class="section-title" id="pairTitle">02 · 作りたいアルカナから逆引き</h2>
+    <div class="reverse-control">
+      <label for="targetArcana">合体結果（作りたいアルカナ）</label>
+      <select id="targetArcana"><option value="">アルカナを選択</option></select>
+    </div>
+    <div class="reverse-heading">
+      <span>素材 A × 素材 B</span>
+      <strong id="recipeCount" aria-live="polite">未選択</strong>
+    </div>
+    <div class="recipes" id="recipes" aria-live="polite">
+      <div class="reverse-empty">合体結果のアルカナを選んでください。</div>
+    </div>
+  </section>
+
+  <section class="panel" id="matrixPanel" aria-labelledby="tableTitle">
+    <div class="table-heading"><h2 class="section-title" id="tableTitle">03 · ARCANA MATRIX</h2><div class="table-actions"><button class="reset fit-action" id="fitMatrix" type="button" aria-pressed="false" aria-controls="matrixWrap">全体表示</button></div></div>
+    <div class="table-wrap" id="matrixWrap" tabindex="0" role="region" aria-label="アルカナ合体表（スマートフォンでは横スクロール可能）">
+      <table id="fusionTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </section>
+
+  <details class="panel notes">
+    <summary class="section-title">読み方・注意事項</summary>
+    <p>この表は<strong>通常の2身合体</strong>における「合体後のアルカナ」を示します。実際にできるペルソナは素材の初期レベルなどで変わります。特殊合体の固定レシピ、解禁条件やDLCなどは別に確認してください。</p>
+    <p>同じアルカナ2体の合体は専用のレベル法則で決まるため、対角線には素材のアルカナを表示しています。02の逆引きには、同種合体による個別ペルソナの生成候補は含めていません。死神 × 永劫は通常2身合体の結果がありません。</p>
+    <p class="source">配合データ：<a href="https://github.com/aqiu384/megaten-fusion-tool" target="_blank" rel="noopener noreferrer">Megaten Fusion Tool</a> 系データ（<a href="https://github.com/hainum/Persona-3-Reloaded-Fusion-Calculator/blob/master/src/data/fusion-chart.json" target="_blank" rel="noopener noreferrer">P3R用チャートJSON</a>）。<a href="https://aqiu384.github.io/megaten-database/p3r/combat.html" target="_blank" rel="noopener noreferrer">megaten-database P3R</a> でも照合しています。</p>
+  </details>
+  <p class="footer">MioGameTools · 非公式ファンメイドツール / ゲーム画像・音源等は使用していません。</p>
+</main>
+<script>
+"use strict";
+const FUSION={"races":["愚者","魔術師","女教皇","女帝","皇帝","法王","恋愛","戦車","正義","隠者","運命","剛毅","刑死者","死神","節制","悪魔","塔","星","月","太陽","審判","永劫"],"english":["Fool","Magician","Priestess","Empress","Emperor","Hierophant","Lovers","Chariot","Justice","Hermit","Fortune","Strength","Hanged","Death","Temperance","Devil","Tower","Star","Moon","Sun","Judgement","Aeon"],"table":[["-"],["Hierophant","-"],["Magician","Justice","-"],["Star","Hanged","Temperance","-"],["Temperance","Lovers","Justice","Chariot","-"],["Hanged","Hermit","Lovers","Tower","Strength","-"],["Justice","Chariot","Magician","Moon","Chariot","Magician","-"],["Emperor","Devil","Fool","Hermit","Devil","Justice","Priestess","-"],["Lovers","Hierophant","Lovers","Emperor","Hanged","Fool","Emperor","Magician","-"],["Priestess","Moon","Strength","Sun","Hierophant","Chariot","Fool","Lovers","Magician","-"],["Strength","Lovers","Hanged","Strength","Star","Moon","Temperance","Priestess","Hanged","Justice","-"],["Death","Emperor","Moon","Fool","Magician","Fortune","Hermit","Temperance","Star","Emperor","Sun","-"],["Devil","Fool","Hierophant","Star","Death","Strength","Justice","Strength","Priestess","Temperance","Magician","Chariot","-"],["Fortune","Priestess","Justice","Lovers","Hermit","Fortune","Hanged","Hierophant","Hermit","Chariot","Star","Empress","Strength","-"],["Chariot","Justice","Fortune","Hierophant","Star","Hermit","Death","Hermit","Moon","Magician","Tower","Moon","Hierophant","Devil","-"],["Hermit","Temperance","Emperor","Tower","Moon","Priestess","Star","Hanged","Temperance","Strength","Empress","Lovers","Priestess","Tower","Fool","-"],["Moon","Chariot","Empress","Devil","Strength","Temperance","Sun","Star","Sun","Emperor","Aeon","Hanged","Death","Aeon","Devil","Judgement","-"],["Devil","Strength","Emperor","Priestess","Hierophant","Moon","Death","Fortune","Hermit","Fool","Magician","Priestess","Empress","Sun","Fortune","Justice","Judgement","-"],["Empress","Strength","Star","Aeon","Lovers","Magician","Empress","Temperance","Temperance","Hierophant","Death","Devil","Chariot","Hanged","Priestess","Fool","Fortune","Sun","-"],["Judgement","Empress","Hierophant","Emperor","Temperance","Tower","Devil","Strength","Magician","Star","Judgement","Lovers","Aeon","Justice","Chariot","Death","Hierophant","Justice","Tower","-"],["Aeon","Star","Hanged","Lovers","Sun","Emperor","Moon","Empress","Fool","Temperance","Sun","Devil","Tower","Devil","Empress","Death","Aeon","Tower","Fortune","Aeon","-"],["Death","Sun","Empress","Priestess","Fortune","Sun","Tower","Hermit","Judgement","Devil","Moon","Fool","Death","-","Justice","Star","Sun","Judgement","Judgement","Empress","Fool","-"]]};
+const {races,table}=FUSION;
+const hues=[208,196,218,246,223,190,254,204,185,232,198,243,215,194,236,260,211,188,250,200,258,224];
+const chips=document.getElementById("chips");
+const tableEl=document.getElementById("fusionTable");
+const target=document.getElementById("targetArcana");
+const recipesEl=document.getElementById("recipes");
+const recipeCount=document.getElementById("recipeCount");
+const selectionName=document.getElementById("selectionName");
+const matchEl=document.getElementById("matches");
+const clear=document.getElementById("clear");
+const matrixPanel=document.getElementById("matrixPanel");
+const matrixWrap=document.getElementById("matrixWrap");
+const fitMatrixButton=document.getElementById("fitMatrix");
+let matrixExpanded=false;
+let matrixReturnScroll=0;
+function applyMatrixFit(){
+  if(!matrixExpanded)return;
+  tableEl.style.setProperty("--matrix-scale","1");
+  const naturalWidth=tableEl.offsetWidth,naturalHeight=tableEl.offsetHeight;
+  if(!naturalWidth||!naturalHeight)return;
+  const availableWidth=matrixWrap.clientWidth-4,availableHeight=matrixWrap.clientHeight-4;
+  const scale=Math.min(1,availableWidth/naturalWidth,availableHeight/naturalHeight);
+  tableEl.style.setProperty("--matrix-scale",String(Math.max(0.1,Math.floor(scale*1000)/1000)));
+}
+function showMatrixExpanded(open){
+  if(open===matrixExpanded)return;
+  if(open&&window.innerWidth<780)return;
+  if(open)matrixReturnScroll=window.scrollY;
+  matrixExpanded=open;
+  matrixPanel.classList.toggle("matrix-expanded",open);
+  document.body.classList.toggle("matrix-lock",open);
+  fitMatrixButton.textContent=open?"元に戻す":"全体表示";
+  fitMatrixButton.setAttribute("aria-pressed",String(open));
+  if(open){
+    matrixPanel.setAttribute("role","dialog");
+    matrixPanel.setAttribute("aria-modal","true");
+  }else{
+    matrixPanel.removeAttribute("role");
+    matrixPanel.removeAttribute("aria-modal");
+    tableEl.style.removeProperty("--matrix-scale");
+    window.scrollTo({top:matrixReturnScroll,behavior:"instant"});
+  }
+  for(const sibling of matrixPanel.parentElement.children){
+    if(sibling!==matrixPanel)sibling.inert=open;
+  }
+  if(open)requestAnimationFrame(applyMatrixFit);
+  fitMatrixButton.focus();
+}
+fitMatrixButton.addEventListener("click",()=>showMatrixExpanded(!matrixExpanded));
+window.addEventListener("resize",()=>{if(matrixExpanded)requestAnimationFrame(applyMatrixFit)});
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape"&&matrixExpanded){event.preventDefault();showMatrixExpanded(false)}
+});
+const cells=[],headers=[];
+const recipesByArcana=races.map(()=>[]);
+let selected=null;
+let focusedPair=null;
+function resultAt(i,j){return table[Math.max(i,j)][Math.min(i,j)]}
+function indexOfResult(i,j){return FUSION.english.indexOf(resultAt(i,j))}
+function styleFor(el,index){el.style.setProperty("--h",String(hues[index]))}
+function matrixStyle(el,index,forText=false){
+  // 合体結果セル・01の選択ボタンは従来の22〜40%。
+  el.style.setProperty("--l",(22+index*18/(races.length-1)).toFixed(1)+"%");
+  // 03の見出しと同種対角線の文字だけ、従来の永劫40%から約2.6ポイント刻み。
+  // 3ポイント刻みだと22種類目が103%を超えるため、94.6%を終点にする。
+  if(forText)el.style.setProperty("--text-l",(40+index*2.6).toFixed(1)+"%");
+}
+for(let i=0;i<races.length;i++){
+  for(let j=i+1;j<races.length;j++){
+    const k=indexOfResult(i,j);
+    if(k>=0)recipesByArcana[k].push([i,j]);
+  }
+}
+function chooseArcana(index){
+  selected=selected===index?null:index;
+  focusedPair=null;
+  renderState();
+}
+function setFocusPair(i,j){
+  focusedPair=[i,j];
+  for(const cell of cells){
+    const row=Number(cell.dataset.row),col=Number(cell.dataset.col);
+    cell.classList.toggle("is-pair",(row===i&&col===j)||(row===j&&col===i));
+  }
+  for(const entry of recipesEl.querySelectorAll(".recipe-row")){
+    const row=Number(entry.dataset.i),col=Number(entry.dataset.j);
+    entry.classList.toggle("active",row===i&&col===j);
+  }
+}
+function renderRecipes(){
+  target.value=selected===null?"":String(selected);
+  recipesEl.replaceChildren();
+  if(selected===null){
+    recipeCount.textContent="未選択";
+    const empty=document.createElement("div");
+    empty.className="reverse-empty";
+    empty.textContent="合体結果のアルカナを選んでください。";
+    recipesEl.append(empty);
+    return;
+  }
+  const pairs=recipesByArcana[selected];
+  recipeCount.textContent=pairs.length+" 通り";
+  if(pairs.length===0){
+    const empty=document.createElement("div");
+    empty.className="reverse-empty";
+    empty.textContent="異なるアルカナ同士の通常2身合体では、このアルカナは作れません。";
+    recipesEl.append(empty);
+    return;
+  }
+  const fragment=document.createDocumentFragment();
+  for(const [i,j] of pairs){
+    const btn=document.createElement("button");
+    btn.type="button";btn.className="recipe-row";btn.dataset.i=String(i);btn.dataset.j=String(j);
+    btn.setAttribute("aria-label",races[i]+" × "+races[j]+"の位置を配合表で表示");
+    for(const [label,index] of [["素材 A",i],["素材 B",j]]){
+      if(label==="素材 B"){
+        const times=document.createElement("span");times.className="recipe-x";times.textContent="×";btn.append(times);
+      }
+      const value=document.createElement("span");value.className="recipe-name";
+      const sub=document.createElement("small");sub.textContent=label;
+      const name=document.createElement("span");name.textContent=races[index];
+      value.append(sub,name);btn.append(value);
+    }
+    btn.addEventListener("click",()=>{
+      setFocusPair(i,j);
+      const cell=cells.find(x=>Number(x.dataset.row)===i&&Number(x.dataset.col)===j);
+      if(cell)cell.scrollIntoView({behavior:"smooth",block:"center",inline:"center"});
+    });
+    fragment.append(btn);
+  }
+  recipesEl.append(fragment);
+  if(focusedPair)setFocusPair(...focusedPair);
+}
+function renderState(){
+  const has=selected!==null;
+  selectionName.textContent=has?races[selected]:"すべて表示";
+  selectionName.style.color="#edf6ff";
+  matchEl.textContent=has?String(recipesByArcana[selected].length):"—";
+  for(const ch of chips.children)ch.setAttribute("aria-pressed",String(has&&Number(ch.dataset.id)===selected));
+  for(const th of headers)th.setAttribute("aria-pressed",String(has&&Number(th.dataset.id)===selected));
+  for(const cell of cells){
+    const yes=has&&cell.dataset.result===FUSION.english[selected];
+    cell.classList.toggle("is-selected",yes);
+    cell.classList.toggle("is-dimmed",has&&!yes);
+    if(!focusedPair)cell.classList.remove("is-pair");
+  }
+  renderRecipes();
+}
+const thead=tableEl.tHead||tableEl.createTHead();
+const head=thead.insertRow();
+const corner=document.createElement("th");corner.setAttribute("aria-hidden","true");head.append(corner);
+function headerButton(index){
+  const button=document.createElement("button");button.className="axis";button.type="button";button.dataset.id=String(index);
+  const span=document.createElement("span");span.textContent=races[index];
+  const sub=document.createElement("small");sub.textContent=String(index).padStart(2,"0");
+  button.append(span,sub);matrixStyle(button,index,true);button.title=races[index]+"を合体結果としてハイライト";
+  button.addEventListener("click",()=>chooseArcana(index));
+  headers.push(button);return button;
+}
+races.forEach((r,i)=>{
+  const option=document.createElement("option");option.textContent=r;option.value=String(i);target.append(option);
+  const chip=document.createElement("button");chip.type="button";chip.className="chip";
+  chip.textContent=r;chip.dataset.id=String(i);matrixStyle(chip,i);chip.setAttribute("aria-pressed","false");
+  chip.addEventListener("click",()=>chooseArcana(i));chips.append(chip);
+  const th=document.createElement("th");th.scope="col";th.append(headerButton(i));head.append(th);
+});
+const tbody=tableEl.tBodies[0]||tableEl.createTBody();
+races.forEach((r,i)=>{
+  const tr=tbody.insertRow();
+  const rowHeader=document.createElement("th");rowHeader.scope="row";rowHeader.append(headerButton(i));tr.append(rowHeader);
+  races.forEach((other,j)=>{
+    const res=resultAt(i,j),td=tr.insertCell(),button=document.createElement("button");
+    button.type="button";button.className="cell-button";
+    button.dataset.row=String(i);button.dataset.col=String(j);button.dataset.result=res;
+    if(i===j){
+      button.classList.add("result","same");button.textContent=r;
+      button.dataset.result=FUSION.english[i];matrixStyle(button,i,true);
+      button.setAttribute("aria-label",r+" × "+other+"：同じアルカナ同士の別レベル法則。"+r+"をハイライト");
+    }else if(res==="-"){
+      button.classList.add("none");button.textContent="—";
+      button.setAttribute("aria-label",r+" × "+other+"：通常合体なし");
+    }else{
+      const k=FUSION.english.indexOf(res);
+      button.classList.add("result");button.textContent=races[k];matrixStyle(button,k);
+      button.setAttribute("aria-label",r+" × "+other+" → "+races[k]+"。この結果をハイライト");
+    }
+    button.addEventListener("click",()=>{
+      const k=i===j?i:FUSION.english.indexOf(res);
+      if(k<0)return;
+      selected=selected===k?null:k;
+      focusedPair=selected===null||i===j?null:[Math.min(i,j),Math.max(i,j)];
+      renderState();
+    });
+    td.append(button);cells.push(button);
+  });
+});
+target.addEventListener("change",()=>{
+  selected=target.value===""?null:Number(target.value);
+  focusedPair=null;
+  renderState();
+});
+clear.addEventListener("click",()=>{selected=null;focusedPair=null;renderState()});
+renderState();
+</script>
+</body></html>
