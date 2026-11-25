@@ -14,6 +14,8 @@ main{max-width:760px;margin:auto;padding:clamp(22px,5vw,56px) 18px 56px}
 h1{font-size:clamp(30px,7vw,48px);margin:10px 0 12px;letter-spacing:-.035em}
 .lead{line-height:1.85;color:var(--muted);font-size:15px;max-width:60ch}
 h2{margin:34px 0 15px;font-size:20px}
+.game-heading{font-size:18px;margin:26px 0 14px;font-weight:750}.game-heading a{text-decoration:none;color:inherit}.game-heading a:hover,.game-heading a:focus-visible{text-decoration:underline}
+h2+.game-heading{margin-top:17px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:14px}
 .card{display:block;background:linear-gradient(150deg,#272727,#1b1b1b);border:1px solid var(--line);padding:22px;border-radius:18px;text-decoration:none;color:inherit;transition:transform .15s,border-color .15s}
 .card:hover,.card:focus-visible{transform:translateY(-2px);border-color:var(--accent);outline:0}
@@ -30,6 +32,7 @@ a{color:var(--accent)}
   <h1>MIOGameTools</h1>
   <p class="lead">プレイ中に欲しくなった便利ツールを、ひとつずつ。気軽に使えて、チャットで育てられるゲーム用ツール集です。</p>
   <h2>ツール一覧</h2>
+  <h3 class="game-heading"><a href="./p3r/">Persona 3 Reload →</a></h3>
   <div class="grid">
     <a class="card" href="./p3r/commu-counter/">
       <span class="chip">Persona 3 Reload</span>
@@ -44,7 +47,7 @@ a{color:var(--accent)}
       <div class="go">ツールを開く →</div>
     </a>
   </div>
-  <h2><a href="./p4g/" style="text-decoration:none">Persona 4 Golden →</a></h2>
+  <h3 class="game-heading"><a href="./p4g/">Persona 4 Golden →</a></h3>
   <div class="grid">
     <a class="card" href="./p4g/commu-counter/">
       <span class="chip">Persona 4 Golden</span>
