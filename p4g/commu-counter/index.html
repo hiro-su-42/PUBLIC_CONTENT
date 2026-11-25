@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>P4G コミュランクカウンター｜学校コミュ残りチャンス</title>
+<title>P4G コミュランクカウンター | MIOGameTools</title>
 <style>
 :root{
   color-scheme:dark;
@@ -78,7 +78,7 @@ footer{font-size:11px;color:#cfbf8d;line-height:1.8;margin-top:24px}
 <div class="date-line"><label for="gameDate">ゲーム内日付（記録用）</label><div class="date-wrap"><input id="gameDate" type="text" inputmode="numeric" maxlength="4" value="0411" placeholder="MMDD" autocomplete="off"><span>MMDD</span></div></div>
 <div class="date-error" id="dateError" role="status"></div>
 <div class="watch-values"><div class="metric"><small>昼コミュ残りランク</small><strong id="dayNeed">—</strong></div><div class="metric"><small>夜コミュ残りランク</small><strong id="nightNeed">—</strong></div><div class="metric"><small>昼夜混在・特殊</small><strong id="mixedNeed">—</strong></div><div class="metric"><small>自動・課題型</small><strong id="specialNeed">—</strong></div></div>
-<p class="details">残りランクは10−現在ランクの合計。0→1の解禁や自動進行も含むため、実際に必要な行動回数とは異なります。夜の学校コミュ交流は通常ランクアップではなく好感度上昇です。</p>
+<p class="details">残りランクは10−現在ランクの合計。0→1の解禁や自動進行も含むため、実際に必要な行動回数とは異なります。夜の学校コミュ交流は通常ランクアップではなく好感度上昇です。隠者は依頼報告で昼枠を使うため、昼に分類しています。</p>
 <details class="planning"><summary>活動枠を手入力して比較（任意）</summary><div class="watch-values"><label class="metric"><small>確保できる昼の活動枠</small><input id="daySlots" type="number" min="0" max="999" placeholder="未入力" inputmode="numeric"></label><label class="metric"><small>確保できる夜の活動枠</small><input id="nightSlots" type="number" min="0" max="999" placeholder="未入力" inputmode="numeric"></label></div><p id="budgetResult" class="details" role="status"></p><p class="details">日付から活動可能日を自動計算する機能ではありません。曜日・天候・解禁・強制イベント等はプレイヤー側で考慮してください。</p></details>
 </section>
 <section class="summary" aria-label="全コミュの進捗"><div class="summary-row"><div><span>全アルカナの合計ランク</span><br><b id="total">0 / 230</b><div class="bar"><div id="progress" style="width:0"></div></div></div><div style="text-align:right"><span>MAX達成</span><br><b id="maxed">0 / 23</b></div></div></section>
