@@ -69,7 +69,7 @@ footer{margin-top:15px;font-size:13px}
 .mc-shape.c{background:#f0b074;transform:rotate(45deg);border-radius:2px;width:clamp(13px,2.7vw,22px);height:clamp(13px,2.7vw,22px)}
 .mc-boat{width:min(100%,175px);margin:auto;transition:transform .25s ease;display:grid;justify-items:center}
 .mc-boat.left{transform:translateX(-5%)}.mc-boat.right{transform:translateX(5%)}
-.mc-seats{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;align-items:center;justify-items:center}
+.mc-seats{width:100%;display:grid;grid-template-columns:repeat(var(--mc-cols,3),minmax(0,1fr));gap:2px;align-items:center;justify-items:center}
 .mc-seat{width:100%;height:39px;display:grid;place-items:center;border:1px dashed #a9c3d0;border-radius:8px;background:#162c3a;padding:2px;cursor:pointer}
 .mc-seat:disabled{cursor:default}
 .mc-seat .mc-shape{width:clamp(12px,2.5vw,22px);height:clamp(12px,2.5vw,22px)}
@@ -84,7 +84,7 @@ footer{margin-top:15px;font-size:13px}
 .mc-section .status.error{background:#352429;color:#ffb9a5}
 .mc-section .mc-bad{border-color:#f08b83!important;background-color:#492b2b}
 .mc-section .mc-locked .mc-bank:not(.mc-bad),.mc-section .mc-locked .mc-water:not(.mc-bad){filter:grayscale(.85)}
-@media(max-width:420px){.mc-section .toolbar{gap:12px}.mc-section .scores{gap:12px}.mc-bank,.mc-water{min-height:206px}.mc-label{font-size:12px}.mc-person{width:27px;height:32px}.mc-seat{height:34px}.mc-hull{height:24px}}
+@media(max-width:420px){.mc-seats{grid-template-columns:repeat(var(--mc-mobile-cols,3),minmax(0,1fr))}.mc-section .toolbar{gap:12px}.mc-section .scores{gap:12px}.mc-bank,.mc-water{min-height:206px}.mc-label{font-size:12px}.mc-person{width:27px;height:32px}.mc-seat{height:34px}.mc-hull{height:24px}}
 @media(prefers-reduced-motion:reduce){.mc-boat{transition:none}}
 
 </style>
@@ -111,7 +111,7 @@ footer{margin-top:15px;font-size:13px}
 <header><small>MISSIONARIES &amp; CANNIBALS</small><h2 id="mc-title">MC問題</h2><p>全員を左岸から右岸へ。丸とひし形の人数に気をつけながら、船で川を渡ろう。</p></header>
 <div class="panel">
 <div class="toolbar">
-<div class="controls"><label for="mc-count">各人数</label><select id="mc-count"><option value="1">1人ずつ</option><option value="2">2人ずつ</option><option value="3" selected>3人ずつ</option><option value="4">4人ずつ</option><option value="5">5人ずつ</option></select><button id="mc-reset" class="mc-btn" type="button">↺ リセット</button></div>
+<div class="controls"><label for="mc-count">各人数</label><select id="mc-count"><option value="1">1人ずつ</option><option value="2">2人ずつ</option><option value="3" selected>3人ずつ</option><option value="4">4人ずつ</option><option value="5">5人ずつ</option></select><label for="mc-capacity">船の定員</label><select id="mc-capacity" aria-label="船の定員"><option value="2">2人</option><option value="3" selected>3人</option><option value="4">4人</option><option value="5">5人</option></select><button id="mc-reset" class="mc-btn" type="button">↺ リセット</button></div>
 <div class="scores"><span class="meter">手数 <strong id="mc-moves">0</strong></span><span class="meter">最短手数 <strong id="mc-min">5</strong></span></div>
 </div>
 <div class="mc-board" id="mc-board">
@@ -122,8 +122,8 @@ footer{margin-top:15px;font-size:13px}
 <div class="mc-actions"><button class="mc-btn" type="button" id="mc-undo">↶ 一手戻す</button><button class="mc-btn primary" type="button" id="mc-cross">出航 →</button></div>
 <p id="mc-status" class="status" role="status" aria-live="polite"></p>
 </div>
-<div class="mc-legend"><span><i class="mc-shape m" aria-hidden="true"></i>丸：宣教師</span><span><i class="mc-shape c" aria-hidden="true"></i>ひし形：人喰い人種</span><span>定員：3人</span></div>
-<p>船のいる岸の図形をタップして乗船。船内の図形をタップすると降ろせます。「出航」で対岸へ移動し、全員が降ります。丸が1個以上ある場所でひし形が丸より多くなると失敗（丸が0個なら安全）。岸・船内の両方を判定します。失敗後は「一手戻す」でやり直せます。</p>
+<div class="mc-legend"><span><i class="mc-shape m" aria-hidden="true"></i>丸：宣教師</span><span><i class="mc-shape c" aria-hidden="true"></i>ひし形：人喰い人種</span><span id="mc-capacity-label">定員：3人</span></div>
+<p>人数と定員を変えると最初から始まります。「解なし」はその設定ではゴールに到達できないことを示します。船のいる岸の図形をタップして乗船。船内の図形をタップすると降ろせます。「出航」で対岸へ移動し、全員が降ります。丸が1個以上ある場所でひし形が丸より多くなると失敗（丸が0個なら安全）。岸・船内の両方を判定します。失敗後は「一手戻す」でやり直せます。</p>
 </section>
 </main>
 <script>
@@ -227,9 +227,9 @@ reset();
 </script>
 <script>
 function mcSafe(m,c){return m===0||m>=c}
-function mcStep(n,s,m,c){
+function mcStep(n,capacity,s,m,c){
   const available=s.side===0?[s.m,s.c]:[n-s.m,n-s.c];
-  if(!Number.isInteger(m)||!Number.isInteger(c)||m<0||c<0||m+c<1||m+c>3||m>available[0]||c>available[1])return null;
+  if(!Number.isInteger(m)||!Number.isInteger(c)||m<0||c<0||m+c<1||m+c>capacity||m>available[0]||c>available[1])return null;
   const sign=s.side===0?-1:1;
   const next={m:s.m+sign*m,c:s.c+sign*c,side:1-s.side,moves:s.moves+1};
   const departure=[available[0]-m,available[1]-c];
@@ -240,13 +240,13 @@ function mcStep(n,s,m,c){
   if(!mcSafe(n-next.m,n-next.c)&&!errors.includes('右岸'))errors.push('右岸');
   return {next,errors};
 }
-function mcMinimum(n){
+function mcMinimum(n,capacity){
   const queue=[{m:n,c:n,side:0,moves:0}],seen=new Set([n+','+n+',0']);
   for(let i=0;i<queue.length;i++){
     const s=queue[i];
     if(s.m===0&&s.c===0&&s.side===1)return s.moves;
-    for(let m=0;m<=3;m++)for(let c=0;c<=3-m;c++){
-      const x=mcStep(n,s,m,c);if(!x||x.errors.length)continue;
+    for(let m=0;m<=capacity;m++)for(let c=0;c<=capacity-m;c++){
+      const x=mcStep(n,capacity,s,m,c);if(!x||x.errors.length)continue;
       const t=x.next,key=[t.m,t.c,t.side].join(',');
       if(!seen.has(key)){seen.add(key);queue.push(t)}
     }
@@ -255,8 +255,8 @@ function mcMinimum(n){
 }
 function mcUI(){
   const $=id=>document.getElementById(id);
-  const count=$('mc-count'),resetButton=$('mc-reset'),undo=$('mc-undo'),cross=$('mc-cross');
-  let n,state,history,load,failed,won;
+  const count=$('mc-count'),capacitySelect=$('mc-capacity'),resetButton=$('mc-reset'),undo=$('mc-undo'),cross=$('mc-cross');
+  let n,capacity,minimum,state,history,load,failed,won;
   function report(message,kind=''){$('mc-status').textContent=message;$('mc-status').className='status '+kind}
   function shape(type){const i=document.createElement('span');i.className='mc-shape '+type;i.setAttribute('aria-hidden','true');return i}
   function tally(){return [load.filter(x=>x==='m').length,load.filter(x=>x==='c').length]}
@@ -266,7 +266,7 @@ function mcUI(){
     const nodes=[];
     for(const [type,size,label] of [['m',m,'丸'],['c',c,'ひし形']])for(let i=0;i<size;i++){
       const b=document.createElement('button');b.type='button';b.className='mc-person';b.disabled=!enabled;b.setAttribute('aria-label',label+'を乗船させる');b.append(shape(type));
-      b.addEventListener('click',()=>{if(failed||won||state.side!==side||load.length>=3)return;load.push(type);report('乗員を選択中。出航ボタンで川を渡ります。');render()});nodes.push(b);
+      b.addEventListener('click',()=>{if(failed||won||state.side!==side||load.length>=capacity)return;load.push(type);report('乗員を選択中。出航ボタンで川を渡ります。');render()});nodes.push(b);
     }
     parent.replaceChildren(...nodes);
   }
@@ -276,7 +276,7 @@ function mcUI(){
     const left=[state.m,state.c],right=[n-state.m,n-state.c];
     if(!failed){const source=state.side===0?left:right;source[0]-=m;source[1]-=c}
     else if(failed.atDeparture){const source=state.side===0?left:right;source[0]-=m;source[1]-=c}
-    people(0,...left,!locked&&state.side===0&&load.length<3);people(1,...right,!locked&&state.side===1&&load.length<3);
+    people(0,...left,!locked&&state.side===0&&load.length<capacity);people(1,...right,!locked&&state.side===1&&load.length<capacity);
     $('mc-left').classList.toggle('active',state.side===0&&!locked);
     $('mc-right').classList.toggle('active',state.side===1&&!locked);
     $('mc-left').classList.toggle('mc-bad',!!failed&&failed.errors.includes('左岸'));
@@ -284,21 +284,24 @@ function mcUI(){
     $('mc-water').classList.toggle('mc-bad',!!failed&&failed.errors.includes('船内'));
     $('mc-board').classList.toggle('mc-locked',!!failed);
     $('mc-boat').className='mc-boat '+(state.side===0?'left':'right');
-    $('mc-boat-caption').textContent=(state.side===0?'左岸':'右岸')+' ・ '+load.length+'/3';
+    $('mc-boat-caption').textContent=(state.side===0?'左岸':'右岸')+' ・ '+load.length+'/'+capacity;
+    $('mc-capacity-label').textContent='定員：'+capacity+'人';
+    $('mc-seats').style.setProperty('--mc-cols',capacity);
+    $('mc-seats').style.setProperty('--mc-mobile-cols',Math.min(capacity,3));
     const seats=[];
-    for(let i=0;i<3;i++){const b=document.createElement('button');b.type='button';b.className='mc-seat';b.disabled=locked||!load[i];b.setAttribute('aria-label',load[i]?(load[i]==='m'?'丸':'ひし形')+'を降ろす':'空席');if(load[i])b.append(shape(load[i]));b.addEventListener('click',()=>{if(locked)return;load.splice(i,1);report('乗員を選択してください。');render()});seats.push(b)}
+    for(let i=0;i<capacity;i++){const b=document.createElement('button');b.type='button';b.className='mc-seat';b.disabled=locked||!load[i];b.setAttribute('aria-label',load[i]?(load[i]==='m'?'丸':'ひし形')+'を降ろす':'空席');if(load[i])b.append(shape(load[i]));b.addEventListener('click',()=>{if(locked)return;load.splice(i,1);report('乗員を選択してください。');render()});seats.push(b)}
     $('mc-seats').replaceChildren(...seats);
     $('mc-moves').textContent=state.moves;
-    $('mc-min').textContent=mcMinimum(n)??'—';
-    count.disabled=!!failed;resetButton.disabled=!!failed;
+    $('mc-min').textContent=minimum??'解なし';
+    count.disabled=!!failed;capacitySelect.disabled=!!failed;resetButton.disabled=!!failed;
     undo.disabled=history.length===0;
     cross.disabled=locked||load.length===0;
     cross.textContent=state.side===0?'出航 →':'← 出航';
   }
-  function resetGame(){n=Number(count.value);state={m:n,c:n,side:0,moves:0};history=[];load=[];failed=null;won=false;report('左岸から船に乗せる図形を選んでください。');render()}
+  function resetGame(){n=Number(count.value);capacity=Number(capacitySelect.value);minimum=mcMinimum(n,capacity);state={m:n,c:n,side:0,moves:0};history=[];load=[];failed=null;won=false;report(minimum===null?'この人数・定員の組み合わせには解がありません。自由に試すことはできます。':'左岸から船に乗せる図形を選んでください。');render()}
   function move(){
     if(failed||won||!load.length)return;
-    const [m,c]=tally(),result=mcStep(n,state,m,c);if(!result)return;
+    const [m,c]=tally(),result=mcStep(n,capacity,state,m,c);if(!result)return;
     history.push({...state});
     if(result.errors.length){
       const available=state.side===0?[state.m,state.c]:[n-state.m,n-state.c];
@@ -308,12 +311,12 @@ function mcUI(){
       report('アウト！ '+result.errors.join('・')+'でひし形が丸を上回りました。一手戻してください。','error');
     }else{
       state=result.next;load=[];won=state.m===0&&state.c===0&&state.side===1;
-      report(won?(state.moves===mcMinimum(n)?'最短 '+state.moves+' 手でクリア！':state.moves+' 手でクリア！'):'到着！ 次に乗せる図形を選んでください。',won?'win':'');
+      report(won?(state.moves===minimum?'最短 '+state.moves+' 手でクリア！':state.moves+' 手でクリア！'):'到着！ 次に乗せる図形を選んでください。',won?'win':'');
     }
     render();
   }
   function back(){if(!history.length)return;state=history.pop();load=[];failed=null;won=false;report('一手戻しました。乗員を選んでください。');render()}
-  count.addEventListener('change',resetGame);resetButton.addEventListener('click',resetGame);cross.addEventListener('click',move);undo.addEventListener('click',back);resetGame();
+  count.addEventListener('change',resetGame);capacitySelect.addEventListener('change',resetGame);resetButton.addEventListener('click',resetGame);cross.addEventListener('click',move);undo.addEventListener('click',back);resetGame();
 }
 mcUI();
 </script>
