@@ -105,9 +105,9 @@ footer{margin-top:15px;font-size:13px}
 <div class="scores"><span class="meter">手数 <strong id="moves">0</strong></span><span class="meter">最短手数 <strong id="minimum">7</strong></span></div>
 </div>
 <div class="board">
-<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>A</b> スタート</span></button>
-<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>B</b> 中継</span></button>
-<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>C</b> ゴール</span></button>
+<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>P1</b> スタート</span></button>
+<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>P2</b> 中継</span></button>
+<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>P3</b> ゴール</span></button>
 </div>
 <p id="status" class="status" role="status" aria-live="polite"></p>
 </section>
@@ -145,7 +145,7 @@ const buttons = [...document.querySelectorAll('.tower')];
 const colors = ['#ffe3a4','#efaa79','#e17e83','#b48bcf','#819bdc','#63adca','#60bdad','#a5c47b'];
 const maxDisks = 20;
 const numberFormat = new Intl.NumberFormat('ja-JP');
-const names = ['A（スタート）','B（中継）','C（ゴール）'];
+const names = ['P1（スタート）','P2（中継）','P3（ゴール）'];
 let towers, selected, moves, won, minimum;
 
 for (let size = 1; size <= maxDisks; size++) {
