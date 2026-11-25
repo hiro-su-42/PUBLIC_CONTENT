@@ -9,10 +9,17 @@
 *{box-sizing:border-box}
 :root{color-scheme:dark;font-family:system-ui,"Yu Gothic UI",sans-serif;color:#f5f1e8;background:#111419}
 body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 48% 0%,#24313b 0%,transparent 62%),#111419}
-main{width:min(940px,calc(100% - 32px));margin:auto;padding:clamp(32px,7vw,76px) 0 36px}
-header{margin-bottom:28px}
-small{color:#eab883;font-weight:750;letter-spacing:.23em}
-h1{font-size:clamp(38px,8vw,72px);line-height:1.15;margin:9px 0 14px;letter-spacing:.04em}
+main{width:min(940px,calc(100% - 32px));margin:auto;padding:24px 0 36px}
+.nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;font-size:12px;color:#bec6cf}
+.nav a{color:#eab883;text-decoration:none}.nav a:hover,.nav a:focus-visible{text-decoration:underline}.nav .slash{opacity:.38}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px;scroll-margin-top:18px}
+.hero>div{min-width:0}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;color:#eab883;margin:0 0 8px}
+.hero h1,.mc-section .hero h2{font-size:clamp(29px,4vw,52px);letter-spacing:-.05em;margin:0;line-height:1.18}
+.hero .hero-description{margin-top:10px;font-size:14px}
+.hero-badge{font-size:11px;letter-spacing:.12em;border:1px solid #566575;color:#eab883;padding:10px 14px;border-radius:999px;background:#293440;text-decoration:none;white-space:nowrap}
+.hero-badge:hover,.hero-badge:focus-visible{border-color:#eab883;outline:2px solid #eab883;outline-offset:2px}
+@media(max-width:600px){.hero{gap:12px}.hero-badge{padding:7px 11px}}
 p{margin:0;color:#bec6cf;line-height:1.65}
 .panel{background:#1b222b;border:1px solid #3b4856;border-radius:20px;overflow:hidden;box-shadow:0 24px 55px #0004}
 .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:17px clamp(12px,3vw,26px);border-bottom:1px solid #3b4856}
@@ -45,12 +52,8 @@ button:focus-visible,select:focus-visible{outline:2px solid #ffe0ad;outline-offs
 footer{margin-top:15px;font-size:13px}
 
 /* MC river crossing */
-.game-switch{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px}
-.game-switch a{color:#eab883;text-decoration:none;border:1px solid #465461;border-radius:8px;padding:8px 12px;font-size:13px}
-.game-switch a:hover,.game-switch a:focus-visible{background:#293440;outline:2px solid #eab883}
 .mc-section{margin-top:clamp(52px,9vw,90px);scroll-margin-top:18px}
-.mc-section h2{font-size:clamp(30px,6vw,52px);margin:8px 0 10px;line-height:1.15}
-.mc-section header{margin-bottom:20px}
+
 .mc-section select,.mc-btn{background:#293440;border:1px solid #566575;border-radius:8px;padding:9px 12px;cursor:pointer}
 .mc-btn:disabled,.mc-section select:disabled{opacity:.38;cursor:not-allowed}
 .mc-section .mc-board{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:5px;padding:clamp(8px,2.7vw,22px);align-items:stretch}
@@ -91,8 +94,11 @@ footer{margin-top:15px;font-size:13px}
 </head>
 <body>
 <main>
-<nav class="game-switch" aria-label="ゲーム選択"><a href="../">← ツール一覧</a><a href="#hanoi-game">ハノイの塔</a><a href="#mc-game">MC問題</a></nav>
-<header id="hanoi-game"><small>TOWER OF HANOI</small><h1>ハノイの塔</h1><p>左の塔にある円盤を、すべて右の塔へ移そう。</p></header>
+<nav class="nav" aria-label="パンくずリスト"><a href="../">MIOGameTools</a><span class="slash" aria-hidden="true">/</span><span>認知科学パズル</span></nav>
+<header class="hero" id="hanoi-game">
+  <div><p class="eyebrow">COGNITIVE SCIENCE · TOWER OF HANOI</p><h1>ハノイの塔</h1><p class="hero-description">左の塔にある円盤を、すべて右の塔へ移そう。</p></div>
+  <a class="hero-badge" href="#mc-game">MC問題へ ↓</a>
+</header>
 <section class="panel" aria-label="ゲーム盤">
 <div class="toolbar">
 <div class="controls"><label for="count">円盤の枚数</label><select id="count" aria-label="円盤の枚数"></select><button id="reset" type="button">↺ リセット</button></div>
@@ -108,7 +114,10 @@ footer{margin-top:15px;font-size:13px}
 <footer><p>塔をクリックして一番上の円盤を選び、移動先の塔をクリック。大きい円盤は小さい円盤の上に置けません。</p></footer>
 
 <section class="mc-section" id="mc-game" aria-labelledby="mc-title">
-<header><small>MISSIONARIES &amp; CANNIBALS</small><h2 id="mc-title">MC問題</h2><p>全員を左岸から右岸へ。丸とひし形の人数に気をつけながら、船で川を渡ろう。</p></header>
+<header class="hero">
+  <div><p class="eyebrow">COGNITIVE SCIENCE · MISSIONARIES &amp; CANNIBALS</p><h2 id="mc-title">MC問題</h2><p class="hero-description">全員を左岸から右岸へ。丸とひし形の人数に気をつけながら、船で川を渡ろう。</p></div>
+  <a class="hero-badge" href="#hanoi-game">ハノイの塔へ ↑</a>
+</header>
 <div class="panel">
 <div class="toolbar">
 <div class="controls"><label for="mc-count">各人数</label><select id="mc-count"><option value="1">1人ずつ</option><option value="2">2人ずつ</option><option value="3" selected>3人ずつ</option><option value="4">4人ずつ</option><option value="5">5人ずつ</option></select><label for="mc-capacity">船の定員</label><select id="mc-capacity" aria-label="船の定員"><option value="2">2人</option><option value="3" selected>3人</option><option value="4">4人</option><option value="5">5人</option></select><button id="mc-reset" class="mc-btn" type="button">↺ リセット</button></div>
