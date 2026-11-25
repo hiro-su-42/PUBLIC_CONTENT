@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="円盤を右の塔へ移す、ブラウザで遊べるハノイの塔。">
+<title>ハノイの塔</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark;font-family:system-ui,"Yu Gothic UI",sans-serif;color:#f5f1e8;background:#111419}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 48% 0%,#24313b 0%,transparent 62%),#111419}
+main{width:min(940px,calc(100% - 32px));margin:auto;padding:clamp(32px,7vw,76px) 0 36px}
+header{margin-bottom:28px}
+small{color:#eab883;font-weight:750;letter-spacing:.23em}
+h1{font-size:clamp(38px,8vw,72px);line-height:1.15;margin:9px 0 14px;letter-spacing:.04em}
+p{margin:0;color:#bec6cf;line-height:1.65}
+.panel{background:#1b222b;border:1px solid #3b4856;border-radius:20px;overflow:hidden;box-shadow:0 24px 55px #0004}
+.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:17px clamp(12px,3vw,26px);border-bottom:1px solid #3b4856}
+.controls,.scores{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.scores{gap:22px;font-variant-numeric:tabular-nums}
+.meter{display:flex;align-items:baseline;gap:8px;color:#c5ccd3;font-size:13px}
+strong{font-size:22px;color:#fff}
+select,button{font:inherit;color:inherit}
+select,#reset{background:#293440;border:1px solid #566575;border-radius:8px;padding:8px 11px;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:2px solid #ffe0ad;outline-offset:3px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(4px,1.5vw,14px);padding:clamp(8px,3vw,26px)}
+.tower{position:relative;height:clamp(224px,34vw,316px);display:grid;grid-template-rows:1fr auto;gap:14px;padding:10px clamp(4px,1.6vw,16px) 12px;background:#151b22;border:1px solid #394655;border-radius:13px;cursor:pointer;min-width:0}
+.tower:hover{background:#202a34}
+.tower.selected{border-color:#f7c68e;background:#2e2927}
+.tower.target{border-color:#698f86}
+.tower[aria-disabled=true]{cursor:default}
+.stage{position:relative;display:flex;flex-direction:column-reverse;align-items:center;gap:3px;padding-bottom:8px;isolation:isolate}
+.board.dense .tower{height:330px}
+.board.dense .stage{gap:2px}
+.board.dense .disk{height:11px;border-radius:3px}
+.stage::before,.stage::after{content:"";position:absolute;background:#526274;z-index:-1}
+.stage::before{width:7px;top:6%;bottom:3px;left:50%;transform:translateX(-50%);border-radius:6px 6px 0 0}
+.stage::after{width:100%;height:7px;bottom:0;border-radius:4px}
+.disk{width:var(--width);height:clamp(15px,2.6vw,24px);border-radius:5px;background:var(--color);box-shadow:inset 0 2px #fff5,inset 0 -3px #0002,0 2px 4px #0005}
+.selected .disk:last-child{transform:translateY(-5px);outline:2px solid #fff2d1;outline-offset:2px}
+.name{display:flex;align-items:center;justify-content:center;gap:6px;font-size:clamp(11px,2.4vw,15px);white-space:nowrap}
+.name b{color:#eab883}
+.status{padding:14px clamp(12px,3vw,26px);border-top:1px solid #3b4856;min-height:56px}
+.status.error{color:#ffb9a5}.status.win{color:#a7edd1;font-weight:750;background:#19332d}
+footer{margin-top:15px;font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<header><small>TOWER OF HANOI</small><h1>ハノイの塔</h1><p>左の塔にある円盤を、すべて右の塔へ移そう。</p></header>
+<section class="panel" aria-label="ゲーム盤">
+<div class="toolbar">
+<div class="controls"><label for="count">円盤の枚数</label><select id="count" aria-label="円盤の枚数"></select><button id="reset" type="button">↺ リセット</button></div>
+<div class="scores"><span class="meter">手数 <strong id="moves">0</strong></span><span class="meter">最短手数 <strong id="minimum">7</strong></span></div>
+</div>
+<div class="board">
+<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>A</b> スタート</span></button>
+<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>B</b> 中継</span></button>
+<button type="button" class="tower"><span class="stage" aria-hidden="true"></span><span class="name"><b>C</b> ゴール</span></button>
+</div>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+</section>
+<footer><p>塔をクリックして一番上の円盤を選び、移動先の塔をクリック。大きい円盤は小さい円盤の上に置けません。</p></footer>
+</main>
+<script>
+const count = document.querySelector('#count');
+const moveDisplay = document.querySelector('#moves');
+const minimumDisplay = document.querySelector('#minimum');
+const status = document.querySelector('#status');
+const board = document.querySelector('.board');
+const buttons = [...document.querySelectorAll('.tower')];
+const colors = ['#ffe3a4','#efaa79','#e17e83','#b48bcf','#819bdc','#63adca','#60bdad','#a5c47b'];
+const maxDisks = 20;
+const numberFormat = new Intl.NumberFormat('ja-JP');
+const names = ['A（スタート）','B（中継）','C（ゴール）'];
+let towers, selected, moves, won, minimum;
+
+for (let size = 1; size <= maxDisks; size++) {
+  const option = document.createElement('option');
+  option.value = size;
+  option.textContent = size + '枚';
+  count.append(option);
+}
+count.value = '3';
+
+function report(message, kind = '') {
+  status.className = 'status ' + kind;
+  status.textContent = message;
+}
+
+function render() {
+  moveDisplay.textContent = numberFormat.format(moves);
+  minimumDisplay.textContent = numberFormat.format(minimum);
+  buttons.forEach((button, index) => {
+    const stack = towers[index];
+    const isSelected = selected === index;
+    const top = stack.at(-1);
+    const moving = selected === null ? undefined : towers[selected].at(-1);
+    button.classList.toggle('selected', isSelected);
+    button.classList.toggle('target', !isSelected && moving !== undefined && (top === undefined || moving < top));
+    button.setAttribute('aria-pressed', isSelected);
+    button.setAttribute('aria-disabled', won);
+    button.setAttribute('aria-label', names[index] + '、' + (top === undefined ? '空' : stack.length + '枚、一番上の円盤のサイズ ' + top));
+    const disks = stack.map(size => {
+      const disk = document.createElement('span');
+      disk.className = 'disk';
+      disk.style.setProperty('--color', colors[(size - 1) % colors.length]);
+      disk.style.setProperty('--width', (34 + 60 * (size - 1) / Math.max(1, Number(count.value) - 1)) + '%');
+      return disk;
+    });
+    button.querySelector('.stage').replaceChildren(...disks);
+  });
+}
+
+function reset() {
+  const size = Number(count.value);
+  board.classList.toggle('dense', size > colors.length);
+  towers = [Array.from({length: size}, (_, index) => size - index), [], []];
+  selected = null;
+  moves = 0;
+  won = false;
+  minimum = 2 ** size - 1;
+  report('移動する円盤のある塔を選んでください。');
+  render();
+}
+
+function choose(index) {
+  if (won) return;
+  const destination = towers[index];
+  if (selected === index) {
+    selected = null;
+    report('選択を解除しました。');
+  } else if (selected === null) {
+    if (!destination.length) {
+      report('この塔には円盤がありません。', 'error');
+      return;
+    }
+    selected = index;
+    report(names[index] + 'の円盤を選択中。移動先を選んでください。');
+  } else {
+    const source = towers[selected];
+    if (source.at(-1) > destination.at(-1)) {
+      report('大きい円盤は小さい円盤の上に置けません。別の塔を選んでください。', 'error');
+      return;
+    }
+    destination.push(source.pop());
+    selected = null;
+    moves++;
+    won = towers[2].length === Number(count.value);
+    if (won) {
+      report(moves === minimum ? '最短の ' + numberFormat.format(moves) + ' 手でクリア！' : numberFormat.format(moves) + ' 手でクリア！ 最短は ' + numberFormat.format(minimum) + ' 手です。', 'win');
+    } else {
+      report('移動する円盤のある塔を選んでください。');
+    }
+  }
+  render();
+}
+
+buttons.forEach((button, index) => button.addEventListener('click', () => choose(index)));
+count.addEventListener('change', reset);
+document.querySelector('#reset').addEventListener('click', reset);
+reset();
+</script>
+</body>
+</html>
